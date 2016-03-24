@@ -30,9 +30,11 @@ ggplot(total.a) +
             colour="darkblue", position=position_dodge(0.1), size=1) + 
   facet_wrap(~labels, scales="free", nrow=5, ncol=2) + 
   theme_bw() +
-  ggtitle(expression(atop("Strong Scalability", atop("Multiple Sizes", "")))) +
+  ggtitle(expression(atop("Strong Scalability", atop("", "")))) +
   xlab("Input size") +
   ylab("Time (seconds)") +
   theme(axis.title=element_text(size=14))
+
+
 
 
