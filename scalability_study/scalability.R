@@ -35,7 +35,7 @@ ggplot(labels, aes(x=x, y=y, colour=steps)) +
 
 ?merge
 
-# total <- summarySE(one_billion, measurevar="total", groupvars=c("locs", "size"))
+total <- summarySE(one_billion, measurevar="total", groupvars=c("locs", "size"))
 # strong_scaling <- merge(total, step1, by=c("locs", "size", "N"), suffixes=c(".total", ".step1"))
 
 step1 <- summarySE(one_billion, measurevar="step1", groupvars=c("locs", "size"))
