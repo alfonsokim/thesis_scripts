@@ -2,7 +2,6 @@
 setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
-library("wesanderson")
 source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 one_billion <- read.csv("results_one_billion.csv")
