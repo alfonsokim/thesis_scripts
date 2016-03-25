@@ -4,6 +4,7 @@ rm(list=ls())
 setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
+library("reshape2")
 source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 small_inputs <- read.csv("results_small_inputs.csv")
@@ -23,6 +24,9 @@ total.a <- melt(total, id.vars=c("locs", "size"), value.name="Time",
 total.a$labels <- factor(total.a$locs,
                          levels=levels(total.a$locs), 
                          labels=paste("Num cores: ", levels(total.a$locs), sep=""))
+total.a$size <- as.factor(total.a$size)
+
+
  ### Esta ya funciona
 ggplot(total.a) + 
   geom_point(aes(x=size, y=Time), size=3) + 
@@ -34,6 +38,27 @@ ggplot(total.a) +
   xlab("Input size") +
   ylab("Time (seconds)") +
   theme(axis.title=element_text(size=14))
+
+total$size <- as.factor(total$size)
+head(total)
+str(total)
+
+### Inversion 
+ggplot(total) + 
+  geom_line(aes(x=locs, y=total, colour=size, group=size),
+            size=1) + 
+  geom_point(aes(x=locs, y=total), size=3, color="blue") + 
+  geom_errorbar(aes(x=locs, y=total, ymin=total-ci, ymax=total+ci),
+                colour="black", width=0.2, 
+                position=position_dodge(0.1)) +
+  theme_bw() +
+  scale_y_continuous(breaks = seq(0, 200, 20)) +
+  scale_color_brewer(palette="Spectral", name="Input size") +
+  ggtitle(expression(atop("Strong Scalability", atop("by input size", "")))) +
+  xlab("Locations") +
+  ylab("Time (seconds)")
+
+
 
 
 

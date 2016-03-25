@@ -1,7 +1,8 @@
 
 source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\summary.R")
 
-scalability_plot <- function(data, measure_var, value_var, group_var, colour="blue", size=0.5) {
+scalability_plot <- function(data, measure_var, value_var, group_var, 
+                             colour=measure_var, size=0.5) {
   
   library("ggplot2")
   
