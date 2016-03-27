@@ -1,6 +1,5 @@
 import sys
 import re
-from collections import OrderedDict
 
 def parse_stat(regexp, line, stats_dict):
     match = regexp.match(line)
@@ -11,7 +10,7 @@ def parse_stat(regexp, line, stats_dict):
 
 
 def parse_global_stats(report):
-    global_stats = OrderedDict()
+    global_stats = {}
     cores_re = re.compile(r"Number of PEs \(MPI ranks\):\s*(?P<cores>\d*).*")
     input_size_re = re.compile(r"Program invocation:  \./scalability_column_sort\+pat (?P<size>\d*)")
     l1_re = re.compile(r'PAPI_L1_DCM\s*(?P<l1_rate>[\d|\.|/|\w]*)\s*(?P<l1_misses>[\d|\.|/|\w]*) misses')
@@ -38,8 +37,10 @@ def parse_global_stats(report):
 
 
 def parse_mpi_messages_table(report, table_name, head=None):
-    table_stats = OrderedDict()
+    table_stats = {}
     row_re = re.compile(r'[\s|\|]*(?P<mpi_rate>[\d|\.]*)\%[\s|\|]*(?P<mpi_count>[\d|\.]*)[\s|\|]*(?P<mpi_bytes>[\d|\.]*)[\s|\|]*(?P<mpi_size_1>[\d|\.]*)[\s|\|]*(?P<mpi_size_2>[\d|\.]*)[\s|\|]*(?P<mpi_distance>[\d|\.]*)')
+    no_mpi = {'mpi_rate': '0', 'mpi_count': '0', 'mpi_bytes': '0', 
+              'mpi_size_1': '0', 'mpi_size_2': '0', 'mpi_distance': '0'}
     in_table = False
     table_stats = []
     c = 0
@@ -51,11 +52,15 @@ def parse_mpi_messages_table(report, table_name, head=None):
         if in_table and '='*20 in line:
             in_table = False
         if in_table:
-            stats = {}
-            if parse_stat(row_re, line, stats):
-                table_stats.append(stats)
-                c += 1
-                if c == head: break
+            if 'No table columns.' in line:
+                table_stats.append(no_mpi)
+                break
+            else:
+                stats = {}
+                if parse_stat(row_re, line, stats):
+                    table_stats.append(stats)
+                    c += 1
+                    if c == head: break
     return table_stats
 
 
@@ -67,10 +72,10 @@ def parse(report):
 
         if not (global_stats and table_stats):
             break 
-            
+
         for stat in table_stats:
             global_stats.update(stat)
-        for stat in global_stats.iteritems():
+        for stat in sorted(global_stats.iteritems()):
             sys.stdout.write('%s=%s,' % tuple(stat))
         sys.stdout.write('\n')
 
