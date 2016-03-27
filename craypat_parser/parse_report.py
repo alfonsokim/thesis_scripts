@@ -1,5 +1,6 @@
 import sys
 import re
+from collections import OrderedDict
 
 def parse_stat(regexp, line, stats_dict):
     match = regexp.match(line)
@@ -8,8 +9,9 @@ def parse_stat(regexp, line, stats_dict):
         return True
     return False
 
+
 def parse_global_stats(report):
-    global_stats = {}
+    global_stats = OrderedDict()
     cores_re = re.compile(r"Number of PEs \(MPI ranks\):\s*(?P<cores>\d*).*")
     input_size_re = re.compile(r"Program invocation:  \./scalability_column_sort\+pat (?P<size>\d*)")
     l1_re = re.compile(r'PAPI_L1_DCM\s*(?P<l1_rate>[\d|\.|/|\w]*)\s*(?P<l1_misses>[\d|\.|/|\w]*) misses')
@@ -24,6 +26,10 @@ def parse_global_stats(report):
     stats_regexp = [cores_re, input_size_re, l1_re, tlb_re, l1_access_re, l2_refills_re, 
                     tlb_util_re, l1_hit_ratio_re, l2_hit_ratio_re, sys_to_l1_re, l1_to_l2_re]
     for line in report:
+        if not line: 
+            return False
+        if 'Notes for table 2:' in line:
+            break ## fin de la seccion de estadisticas generales
         for regexp in stats_regexp:
             parse_stat(regexp, line.strip(), global_stats)
 
@@ -32,18 +38,13 @@ def parse_global_stats(report):
 
 
 def parse_mpi_messages_table(report, table_name, head=None):
-    """
-       Sent | Sent Msg |    Sent Msg | 16<= MsgSz |     256<= |Sent Distance
-        Msg |    Count | Total Bytes | <256 Count |     MsgSz |
-     Count% |          |             |            |     <4KiB |
-            |          |             |            |     Count |
-    """
-    table_stats = {}
-    row_re = re.compile(r'[\s|\|]*(?P<rate>[\d|\.]*)\%[\s|\|]*(?P<count>[\d|\.]*)[\s|\|]*(?P<bytes>[\d|\.]*)[\s|\|]*(?P<size_1>[\d|\.]*)[\s|\|]*(?P<size_2>[\d|\.]*)[\s|\|]*(?P<distance>[\d|\.]*)')
+    table_stats = OrderedDict()
+    row_re = re.compile(r'[\s|\|]*(?P<mpi_rate>[\d|\.]*)\%[\s|\|]*(?P<mpi_count>[\d|\.]*)[\s|\|]*(?P<mpi_bytes>[\d|\.]*)[\s|\|]*(?P<mpi_size_1>[\d|\.]*)[\s|\|]*(?P<mpi_size_2>[\d|\.]*)[\s|\|]*(?P<mpi_distance>[\d|\.]*)')
     in_table = False
     table_stats = []
     c = 0
     for line in report:
+        if not line: return False
         line = line.strip()
         if table_name in line:
             in_table = True
@@ -59,18 +60,27 @@ def parse_mpi_messages_table(report, table_name, head=None):
 
 
 
-def parse(file_name):
-    report = open(file_name, 'r')
-    global_stats = parse_global_stats(report)
-    for name, value in global_stats.iteritems():
-        print '%s:   %s' % (str(name), str(value))
-    report.seek(0)
-    print "="*10
-    table_stats = parse_mpi_messages_table(report, 'MPI Sent Message Stats by Distance', head=2)
-    for stat in table_stats:
-        for name, value in stat.iteritems():
-            print '%s:   %s' % (str(name), str(value))
+def parse(report):
+    while True:
+        global_stats = parse_global_stats(report)
+        table_stats = parse_mpi_messages_table(report, 'MPI Sent Message Stats by Distance', head=1)
+
+        if not (global_stats and table_stats):
+            break 
+            
+        for stat in table_stats:
+            global_stats.update(stat)
+        for stat in global_stats.iteritems():
+            sys.stdout.write('%s=%s,' % tuple(stat))
+        sys.stdout.write('\n')
 
 
 if __name__ == '__main__':
-    parse(sys.argv[1])
+    if len(sys.argv) == 2:
+        in_file = open(sys.argv[1], 'r')
+        parse(in_file)
+        in_file.close()
+    else:
+        parse(sys.stdin)
+
+
