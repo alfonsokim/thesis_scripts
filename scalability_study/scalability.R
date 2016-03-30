@@ -1,4 +1,6 @@
 
+rm(list=ls())
+
 setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
@@ -101,10 +103,10 @@ colnames(strong_scaling)[names(strong_scaling) == "ci"] <- "ci.conts"
 
 
 vars <- c("conts", paste0("step", 0:9, sep=""))
-labels <- c("Containers", "Copy to Matrix", "Sort (1)", 
-            "Transpose & Reshape", "Sort (2)", "Reshape & Transpose", 
-            "Sort (3)", "Shift Matrix", "Sort (4)", "Unshift Matrix", 
-            "Copy to View")
+labels <- c("Create containers", "Copy to matrix", "Sort (1)", 
+            "Transpose & reshape", "Sort (2)", "Reshape & transpose", 
+            "Sort (3)", "Shift matrix", "Sort (4)", "Unshift matrix", 
+            "Copy to view")
 
 strong_scaling.a <- melt(strong_scaling, id.vars=c("locs"), value.name="Time", 
                          variable.name="Step", measure.vars=vars)

@@ -55,7 +55,7 @@ ggplot(total) +
   scale_y_continuous(breaks = seq(0, 200, 20)) +
   scale_color_brewer(palette="Spectral", name="Input size") +
   ggtitle(expression(atop("Strong Scalability", atop("by input size", "")))) +
-  xlab("Locations") +
+  xlab("Cores (Locations)") +
   ylab("Time (seconds)")
 
 

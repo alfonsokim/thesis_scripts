@@ -25,7 +25,7 @@ ggplot(inputs.plot) +
   scale_y_continuous(breaks=seq(0, 8500000000, 1000000), labels=comma) +
   scale_color_brewer(palette="Spectral", name="Input size") +
   ggtitle(expression(atop("MPI Messages", atop("by input size", "")))) +
-  xlab("Locations") +
+  xlab("Cores (Locations)") +
   ylab("Number of messages")
 
 
@@ -46,6 +46,20 @@ ggplot(one_billion.s) +
   theme_bw() +
   scale_y_continuous(breaks=seq(0, 800000000, 5000000), labels=comma) +
   # scale_color_brewer(palette="Spectral", name="Input size") +
+  ggtitle(expression(atop("MPI Messages", atop("one billion elements", "")))) +
+  xlab("Cores (Locations)") +
+  ylab("Number of messages")
+
+
+plot.all <- rbind(inputs.plot, one_billion.s)
+
+ggplot(plot.all) + 
+  geom_line(aes(x=cores, y=mpi_count, colour=size, group=size),
+            size=1) + 
+  geom_point(aes(x=cores, y=mpi_count), size=3, color="blue") + 
+  theme_bw() +
+  scale_y_continuous(breaks=seq(0, 8500000000, 1000000), labels=comma) +
+  scale_color_brewer(palette="Spectral", name="Input size") +
   ggtitle(expression(atop("MPI Messages", atop("by input size", "")))) +
   xlab("Locations") +
   ylab("Number of messages")
