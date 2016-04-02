@@ -9,10 +9,23 @@ def parse_stat(regexp, line, stats_dict):
     return False
 
 
+def parse_trailer(report):
+    global_stats = {}
+    input_size_re = re.compile(r"Program invocation:  \./scalability_column_sort\+pat (?P<size>\d*)")
+    stats_regexp = [input_size_re]
+    for line in report:
+        if not line: 
+            return False
+        if 'Number of traced functions:' in line:
+            break
+        for regexp in stats_regexp:
+            parse_stat(regexp, line.strip(), global_stats)
+    return global_stats
+
+
 def parse_global_stats(report):
     global_stats = {}
     cores_re = re.compile(r"Number of PEs \(MPI ranks\):\s*(?P<cores>\d*).*")
-    input_size_re = re.compile(r"Program invocation:  \./scalability_column_sort\+pat (?P<size>\d*)")
     l1_re = re.compile(r'PAPI_L1_DCM\s*(?P<l1_rate>[\d|\.|/|\w]*)\s*(?P<l1_misses>[\d|\.|/|\w]*) misses')
     tlb_re = re.compile(r'PAPI_TLB_DM\s*(?P<tlb_rate>[\d|\.|/|\w]*)\s*(?P<tlb_misses>[\d|\.|/|\w]*) misses')
     l1_access_re = re.compile(r'PAPI_L1_DCA\s*(?P<l1_access>[\d|\.|/|\w]*)\s*(?P<l1_refs>[\d|\.|/|\w]*) refs')
@@ -22,8 +35,8 @@ def parse_global_stats(report):
     l2_hit_ratio_re = re.compile(r'D2 cache hit\,miss ratio\s*(?P<l2_hit_ratio>[\d|\.|\%|\w]*) hits\s*(?P<l2_miss_ratio>[\d|\.|\%|\w]*) misses')
     sys_to_l1_re = re.compile(r'System to D1 bandwidth\s*(?P<sys_to_l1_rate>[\d|\.|/|\w]*)\s*(?P<sys_to_l1>[\d|\.|\%|\w]*) bytes')
     l1_to_l2_re = re.compile(r'D2 to D1 bandwidth\s*(?P<l2_to_l1_rate>[\d|\.|/|\w]*)\s*(?P<l2_to_l1>[\d|\.|\%|\w]*) bytes')
-    stats_regexp = [cores_re, input_size_re, l1_re, tlb_re, l1_access_re, l2_refills_re, 
-                    tlb_util_re, l1_hit_ratio_re, l2_hit_ratio_re, sys_to_l1_re, l1_to_l2_re]
+    stats_regexp = [cores_re, l1_re, tlb_re, l1_access_re, l2_refills_re, tlb_util_re, 
+                    l1_hit_ratio_re, l2_hit_ratio_re, sys_to_l1_re, l1_to_l2_re]
     for line in report:
         if not line: 
             return False
@@ -69,10 +82,12 @@ def parse(report):
     while True:
         global_stats = parse_global_stats(report)
         table_stats = parse_mpi_messages_table(report, 'MPI Sent Message Stats by Distance', head=1)
+        trailer_stats = parse_trailer(report)
 
-        if not (global_stats and table_stats):
+        if not (global_stats and table_stats and trailer_stats):
             break 
 
+        global_stats.update(trailer_stats)
         for stat in table_stats:
             global_stats.update(stat)
         for stat in sorted(global_stats.iteritems()):
