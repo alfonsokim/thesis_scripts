@@ -4,6 +4,7 @@ setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comun
 
 library("ggplot2")
 library("reshape2")
+library(scales)
 source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\summary.R")
 
 one_million <- read.csv("ws_one_million.csv")
@@ -78,4 +79,52 @@ ggplot(one_million.l2_hit_ratio) +
   ggtitle(expression(atop("Cache performance", atop("", "")))) +
   xlab("Input size") +
   ylab("Hit Ratio")
+
+?melt
+str(one_million.l12_hit_ratio)
+one_million.l12_hit_ratio.m <- melt(one_million.l12_hit_ratio, id.vars=c("cores", "size", "N"),
+                                    measure.vars=c("l1_hit_ratio", "l2_hit_ratio"))
+
+one_million.l12_hit_ratio.err <- melt(one_million.l12_hit_ratio, id.vars=c("cores", "size", "N"),
+                                      measure.vars=c("ci.l1_hr", "ci.l2_hr"))
+
+one_million.l12_hit_ratio.err$n[one_million.l12_hit_ratio.err$variable=="ci.l1_hr"] <- rep("l1_hit_ratio", 10)
+one_million.l12_hit_ratio.err$n[one_million.l12_hit_ratio.err$variable=="ci.l2_hr"] <- rep("l2_hit_ratio", 10)
+
+one_million.l12_hit_ratio.err$variable <- one_million.l12_hit_ratio.err$n
+one_million.l12_hit_ratio.err$n <- NULL
+
+one_million.l12_hit_ratio.m <- merge(one_million.l12_hit_ratio.m, one_million.l12_hit_ratio.err,
+                                     by=c("cores", "size", "N", "variable"), suffixes=c("", ".err"))
+
+
+one_million.l12_hit_ratio.m$value <- one_million.l12_hit_ratio.m$value / 100
+one_million.l12_hit_ratio.m$value.err <- one_million.l12_hit_ratio.m$value.err / 100
+
+## save(one_million.l12_hit_ratio.m, file="l1_l2_hit_rate")
+
+ggplot(one_million.l12_hit_ratio.m, group=variable) + 
+  geom_point(aes(x=cores, y=value), size=3) + 
+  geom_line(aes(x=cores, y=value, group=variable, colour=variable), 
+            position=position_dodge(0.1), size=1) + 
+  geom_errorbar(aes(x=cores, y=value,
+                    ymin=value-value.err, 
+                    ymax=value+value.err),
+                colour="black", width=0.2, 
+                position=position_dodge(0.1)) +
+  # geom_vline(xintercept=5, linetype="dashed", size=0.5, color="red") + 
+  # geom_vline(xintercept=4, linetype="dashed", size=0.5, color="blue") + 
+  # facet_wrap(~labels, scales="free", nrow=5, ncol=2) + 
+  scale_y_continuous(breaks=seq(0.96, 1, 0.002), labels=percent) +
+  # scale_color_manual(values=c("#CC6666", "#9999CC")) + 
+  # scale_linetype_manual(values = c(rep("solid", 10), rep("dashed", 6))) +
+  scale_color_discrete("Cache hit rate", 
+                      labels=c("Cache L1", "Cache L2")) +
+  theme_bw() +
+  ggtitle(expression(atop("Cache performance", atop("One million elements per core", "")))) +
+  xlab("Cores (Locations)") +
+  ylab("Hit Rate")
+
+
+
 

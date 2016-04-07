@@ -43,6 +43,8 @@ total$size <- as.factor(total$size)
 head(total)
 str(total)
 
+### save(total, file="ss_small_inputs_data")
+
 ### Inversion 
 ggplot(total) + 
   geom_line(aes(x=locs, y=total, colour=size, group=size),
