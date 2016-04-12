@@ -43,6 +43,8 @@ total$size <- as.factor(total$size)
 head(total)
 str(total)
 
+?facet_wrap
+
 ### Inversion 
 ggplot(total) + 
   geom_line(aes(x=locs, y=total, colour=size, group=size),
@@ -58,8 +60,28 @@ ggplot(total) +
   xlab("Cores (Locations)") +
   ylab("Time (seconds)")
 
+as.integer(as.character(total$size))
 
+?as.factor
 
+total$labels <- factor(total$size,
+                       levels=levels(total$size), 
+                       labels=paste((as.integer(as.character(levels(total$size))) / 1000000), " million", sep=""))
+
+### facet_wrap 
+ggplot(total) + 
+  geom_line(aes(x=locs, y=total, group=1), size=1) + 
+  geom_point(aes(x=locs, y=total), size=3, color="blue") + 
+  geom_errorbar(aes(x=locs, y=total, ymin=total-ci, ymax=total+ci),
+                colour="black", width=0.2, 
+                position=position_dodge(0.1)) +
+  theme_bw() +
+  scale_y_continuous(breaks = seq(0, 200, 20)) +
+  scale_color_brewer(palette="Spectral", name="Input size") +
+  ggtitle(expression(atop("Strong Scalability", atop("by input size", "")))) +
+  facet_wrap(~ labels, nrow=3, ncol=3, scales="free_y") + 
+  xlab("Cores (Locations)") +
+  ylab("Time (seconds)")
 
 
 

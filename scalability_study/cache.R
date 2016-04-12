@@ -10,6 +10,8 @@ source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\summar
 one_million <- read.csv("ws_one_million.csv")
 str(one_million)
 
+?rename
+
 one_million.l1_access <- summarySE(one_million, measurevar="l1_access", 
                                    groupvars=c("cores", "size"))
 one_million.l1_access$cores <- as.factor(one_million.l1_access$cores)
@@ -80,7 +82,6 @@ ggplot(one_million.l2_hit_ratio) +
   xlab("Input size") +
   ylab("Hit Ratio")
 
-?melt
 str(one_million.l12_hit_ratio)
 one_million.l12_hit_ratio.m <- melt(one_million.l12_hit_ratio, id.vars=c("cores", "size", "N"),
                                     measure.vars=c("l1_hit_ratio", "l2_hit_ratio"))
@@ -126,5 +127,23 @@ ggplot(one_million.l12_hit_ratio.m, group=variable) +
   ylab("Hit Rate")
 
 
+one_million
+ss_one_billion <- read.csv("../ss_one_billion.csv")
 
+l1.s <- summarySE(ss_one_billion, measurevar="l1_hit_ratio", groupvars=c("cores", "size"))
+l2.s <- summarySE(ss_one_billion, measurevar="l2_hit_ratio", groupvars=c("cores", "size"))
+mpi.s <- summarySE(ss_one_billion, measurevar="mpi_count", groupvars=c("cores", "size"))
+
+?merge
+
+merge(l1.s, l2.s, by=c("cores", "size", "N"), all=TRUE)
+
+ss_one_billion.m <- melt(ss_one_billion, id.vars=c("cores"), 
+                         measure.vars=c("l1_hit_ratio", "l2_hit_ratio", "mpi_count"))
+
+
+ggplot(ss_one_billion.m, aes(x=cores, group=variable)) + 
+  geom_point(aes(y=value, group=variable, colour=variable)) + 
+  facet_wrap(~ variable, scales="free_y") +
+  theme_bw()
 
