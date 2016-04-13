@@ -138,7 +138,7 @@ mpi.s <- summarySE(ss_one_billion, measurevar="mpi_count", groupvars=c("cores", 
 
 merge(l1.s, l2.s, by=c("cores", "size", "N"), all=TRUE)
 
-ss_one_billion.m <- melt(ss_one_billion, id.vars=c("cores"), 
+ss_one_billion.m <- melt(ss_one_billion, id.vars=c("cores", "size"), 
                          measure.vars=c("l1_hit_ratio", "l2_hit_ratio", "mpi_count"))
 
 
