@@ -134,7 +134,6 @@ l1.s <- summarySE(ss_one_billion, measurevar="l1_hit_ratio", groupvars=c("cores"
 l2.s <- summarySE(ss_one_billion, measurevar="l2_hit_ratio", groupvars=c("cores", "size"))
 mpi.s <- summarySE(ss_one_billion, measurevar="mpi_count", groupvars=c("cores", "size"))
 
-?merge
 
 merge(l1.s, l2.s, by=c("cores", "size", "N"), all=TRUE)
 
