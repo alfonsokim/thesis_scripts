@@ -254,6 +254,8 @@ total.r$cores_label <- factor(total.r$cores, levels=c(1,8,64,512),
 mpi.r$cores_label <- factor(mpi.r$cores, levels=c(1,8,64,512),
                             labels=paste0(c(1,8,64,512), " cores"))
 
+str(ss.small)
+
 ggplot() + 
   geom_point(aes(x=size, y=total), 
              size=3, color="darkgreen", data=total.r) + 
@@ -274,7 +276,8 @@ ggplot() +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         axis.title.y = element_blank()) + 
-  ggtitle(expression(atop("Cache and MPI", atop("by input size", ""))))
+  xlab("Input size") + 
+  ggtitle(expression(atop("Cache and MPI Performance", atop("by input size", ""))))
 
 
 
