@@ -127,6 +127,7 @@ ggplot(strong_scaling.a, aes(x=as.factor(locs), y=Time, group=Step, fill=Step)) 
                 position=position_dodge(0.1)) +
   scale_y_continuous(breaks=seq(0, 700, 50)) +
   theme_bw() +
+  ## theme(legend.position="bottom") + 
   scale_fill_brewer(palette="Paired", breaks=vars, labels=labels) + 
   ggtitle(expression(atop("Strong Scalability", atop("1 billion elements", "")))) +
   xlab("Cores (Locations)") +
