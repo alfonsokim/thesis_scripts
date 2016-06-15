@@ -1,10 +1,12 @@
 
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
+library("reshape2")
+library("wesanderson")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 one_billion <- read.csv("results_one_billion.csv")
 
@@ -111,6 +113,8 @@ labels <- c("Create containers", "Copy to matrix", "Sort (1)",
 strong_scaling.a <- melt(strong_scaling, id.vars=c("locs"), value.name="Time", 
                          variable.name="Step", measure.vars=vars)
 
+?reshape2::melt
+
 total$Step <- "total"
 wes_palette(n=11, "GrandBudapest")
 
@@ -121,17 +125,20 @@ ggplot(strong_scaling.a, aes(x=as.factor(locs), y=Time, group=Step, fill=Step)) 
   geom_line(data=total, aes(x=as.factor(locs), y=total), 
             position=position_dodge(0.1), size=1, color="darkblue") +
   geom_point(data=total, aes(x=as.factor(locs), y=total), 
-             position=position_dodge(0.1), size=3) +
+             position=position_dodge(0.1), size=2) +
   geom_errorbar(aes(x=as.factor(locs), y=total, ymin=total-ci, ymax=total+ci),
                 data=total, colour="black", width=0.2, 
                 position=position_dodge(0.1)) +
   scale_y_continuous(breaks=seq(0, 700, 50)) +
   theme_bw() +
-  ## theme(legend.position="bottom") + 
+  ## theme(text = element_text(size=12)) + 
   scale_fill_brewer(palette="Paired", breaks=vars, labels=labels) + 
   ggtitle(expression(atop("Strong Scalability", atop("1 billion elements", "")))) +
   xlab("Cores (Locations)") +
   ylab("Time (seconds)")
+
+
+ggsave(filename="ss_all_steps_2.png", path="Graficas") # , width=250, height=100, units='mm'
 
 
 

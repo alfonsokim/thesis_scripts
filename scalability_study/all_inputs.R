@@ -1,11 +1,11 @@
 
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
 library("reshape2")
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 small_inputs <- read.csv("all_inputs.csv")
 small_inputs$conts = small_inputs$cont1 + small_inputs$cont2
@@ -71,7 +71,7 @@ total[as.integer(as.character(total$locs)) >= 16, ]
 total.512$rel_size <- as.integer(total.512$size) / total.512$total
 
 ggplot(total.512, aes(x=size)) + 
-  geom_point(aes(y=total), color="blue", size=3) + 
+  geom_point(aes(y=total), color="blue", size=2) + 
   geom_errorbar(aes(y=total, ymin=total-ci, ymax=total+ci),
                 colour="black", width=0.5, 
                 position=position_dodge(0.1)) +
@@ -81,6 +81,8 @@ ggplot(total.512, aes(x=size)) +
   ggtitle(expression(atop("Execution time for 512 Cores", atop("", "")))) +
   xlab("Input Size") +
   ylab("Time (seconds)")
+
+ggsave(filename="times_512_2.png", path="Graficas") # width=12.5, height=7.5, units='in', limitsize = FALSE
 
 total.64p <- total[as.integer(as.character(total$locs)) >= 64, ]
 

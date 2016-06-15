@@ -1,11 +1,11 @@
 
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
 library("reshape2")
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 small_inputs <- read.csv("big_inputs.csv")
 small_inputs$conts = small_inputs$cont1 + small_inputs$cont2
@@ -71,7 +71,7 @@ total$labels <- factor(total$size,
 ### facet_wrap 
 ggplot(total) + 
   geom_line(aes(x=locs, y=total, group=1), size=1) + 
-  geom_point(aes(x=locs, y=total), size=3, color="blue") + 
+  geom_point(aes(x=locs, y=total), size=2, color="blue") + 
   geom_errorbar(aes(x=locs, y=total, ymin=total-ci, ymax=total+ci),
                 colour="black", width=0.2, 
                 position=position_dodge(0.1)) +
@@ -83,5 +83,5 @@ ggplot(total) +
   xlab("Cores (Locations)") +
   ylab("Time (seconds)")
 
-
+ggsave(filename="big_inputs_times_2.png", path="Graficas") # width=12.5, height=7.5, units='in', limitsize = FALSE
 

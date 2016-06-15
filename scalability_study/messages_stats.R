@@ -4,7 +4,7 @@ library("ggplot2")
 library("reshape2")
 library("scales")
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion")
 
 distances <- (2 ** seq(0, 9, 1))
 1:512 %in% distances
@@ -38,4 +38,6 @@ ggplot(messages) +
   ggtitle(expression(atop("MPI message distances", atop("by locations", "")))) +
   xlab("Cores (Locations)") +
   ylab("Message rate")
+
+ggsave(filename="message_distances_2.png", path="Graficas")
 

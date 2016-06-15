@@ -1,11 +1,11 @@
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion")
 
 library("ggplot2")
 library("reshape2")
 library("scales")
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 small_inputs <- read.csv("ss_small_inputs.csv")
 head(small_inputs)
@@ -20,7 +20,7 @@ inputs.plot <- subset(small_inputs.s, !(size %in% c("1000", "5000", "10000", "50
 ggplot(inputs.plot) + 
   geom_line(aes(x=cores, y=mpi_count, colour=size, group=size),
             size=1) + 
-  geom_point(aes(x=cores, y=mpi_count), size=3, color="blue") + 
+  geom_point(aes(x=cores, y=mpi_count), size=2, color="blue") + 
   theme_bw() +
   scale_y_continuous(breaks=seq(0, 8500000000, 1000000), labels=comma) +
   scale_color_brewer(palette="Spectral", name="Input size") +
@@ -28,6 +28,8 @@ ggplot(inputs.plot) +
   xlab("Cores (Locations)") +
   ylab("Number of messages")
 
+
+ggsave(filename="messages_input_size_2.png", path="Graficas")
 
 
 one_billion <- read.csv("ss_one_billion.csv")
@@ -42,13 +44,18 @@ one_billion.s$size <- as.factor(one_billion.s$size)
 ggplot(one_billion.s) + 
   geom_line(aes(x=cores, y=mpi_count, group=1),
             size=1) + 
-  geom_point(aes(x=cores, y=mpi_count), size=3, color="blue") + 
+  geom_point(aes(x=cores, y=mpi_count), size=2, color="blue") + 
   theme_bw() +
   scale_y_continuous(breaks=seq(0, 800000000, 5000000), labels=comma) +
   # scale_color_brewer(palette="Spectral", name="Input size") +
   ggtitle(expression(atop("MPI Messages", atop("one billion elements", "")))) +
   xlab("Cores (Locations)") +
   ylab("Number of messages")
+
+ggsave(filename="messages_one_billion_2.png", path="Graficas")
+
+
+
 
 
 plot.all <- rbind(inputs.plot, one_billion.s)

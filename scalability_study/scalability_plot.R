@@ -1,5 +1,5 @@
 
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\summary.R")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\summary.R")
 
 scalability_plot <- function(data, measure_var, value_var, group_var, 
                              colour=measure_var, size=0.5) {

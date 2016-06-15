@@ -1,17 +1,17 @@
 
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\StrongScalability")
 
 library("ggplot2")
 library("reshape2")
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\scalability_plot.R")
 
 small_inputs <- read.csv("results_small_inputs.csv")
 small_inputs$conts = small_inputs$cont1 + small_inputs$cont2
 head(small_inputs)
 
-small_inputs <- small_inputs[small_inputs$size != 50000000, ]
+## small_inputs <- small_inputs[small_inputs$size != 50000000, ]
 
 total <- summarySE(small_inputs, measurevar="total", groupvars=c("locs", "size"))
 total$locs <- as.factor(total$locs)
@@ -51,7 +51,7 @@ str(total)
 ggplot(total) + 
   geom_line(aes(x=locs, y=total, colour=size, group=size),
             size=1) + 
-  geom_point(aes(x=locs, y=total), size=3, color="blue") + 
+  geom_point(aes(x=locs, y=total), size=2, color="blue") + 
   geom_errorbar(aes(x=locs, y=total, ymin=total-ci, ymax=total+ci),
                 colour="black", width=0.2, 
                 position=position_dodge(0.1)) +
@@ -62,11 +62,31 @@ ggplot(total) +
   xlab("Cores (Locations)") +
   ylab("Time (seconds)")
 
+ggsave(filename="ss_multiple_inputs_2.png", path="Graficas") # width=12.5, height=7.5, units='in', limitsize = FALSE
 
+
+
+###### Explicar el crecimiento ######
+sizes <- data.frame(cores=total$locs, size=total$size)
+sizes$input_size.gb <- as.numeric(as.character(total$size)) * 8 * 3 / 1024 / 1024 / 1024
+sizes$input_size.cores <- sizes$input_size.gb / as.numeric(as.character(total$locs)) / 2
+
+ggplot(sizes) + 
+  geom_line(aes(x=cores, y=input_size.cores, color=size, group=size),
+            size=1) + 
+  geom_point(aes(x=cores, y=input_size.cores, color=size), size=2) + 
+  theme_bw() +
+  scale_y_continuous(breaks = seq(0, 0.7, 0.05)) +
+  scale_color_brewer(palette="Spectral", name="Input size") +
+  ggtitle(expression(atop("Memory needed to allocate the input", atop("Per core", "")))) +
+  xlab("Cores (Locations)") + 
+  ylab("Memory (GB)")
+
+ggsave(filename="ss_memory_per_core_2.png", path="Graficas") # width=12.5, height=7.5, units='in', limitsize = FALSE
 
 
 ###### CACHE ######
-path = "C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion\\ss_small_inputs.csv"
+path = "C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion\\ss_small_inputs.csv"
 ss.small <- read.csv(path)
 head(ss.small, 10)
 
@@ -257,28 +277,33 @@ mpi.r$cores_label <- factor(mpi.r$cores, levels=c(1,8,64,512),
 str(ss.small)
 
 ggplot() + 
+  geom_point(aes(x=size, y=value, color=variable, group=variable), 
+             size=3, data=l1_l2.m) + 
   geom_point(aes(x=size, y=total), 
              size=3, color="darkgreen", data=total.r) + 
   geom_point(aes(x=size, y=mpi_count), 
              size=3, color="darkorange", data=mpi.r) + 
-  geom_point(aes(x=size, y=value, color=variable, group=variable), 
-             size=3, data=l1_l2.m) + 
+  geom_line(aes(x=size, y=value, color=variable, group=variable), 
+            size=1, data=l1_l2.m) + 
   geom_line(aes(x=size, y=total, group=1), 
              size=1, color="darkgreen", data=total.r) + 
   geom_line(aes(x=size, y=mpi_count, group=1), 
              size=1, color="darkorange", data=mpi.r) + 
-  geom_line(aes(x=size, y=value, color=variable, group=variable), 
-            size=1, data=l1_l2.m) + 
   scale_color_manual(name="", 
                      values=c("red", "blue"), 
                      labels=c("L1 Cache", "L2 Cache")) +
+  scale_y_continuous(labels=comma) +
   facet_wrap(~cores_label+type, nrow=4, ncol=3, scales="free_y") + 
+  ## facet_grid(type ~ cores_label, scales="free_y") + 
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        axis.title.y = element_blank()) + 
+        axis.title.y = element_blank(),
+        legend.position="left") + 
   xlab("Input size") + 
   ggtitle(expression(atop("Cache and MPI Performance", atop("by input size", ""))))
 
+ggsave(filename="time_mpi_cache_2.png", path="Graficas",
+       width=12.5, height=7.5, units='in', limitsize = FALSE)
 
 
 

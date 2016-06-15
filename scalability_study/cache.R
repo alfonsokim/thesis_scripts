@@ -1,11 +1,11 @@
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion\\pat_results")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\Comunicacion\\pat_results")
 
 library("ggplot2")
 library("reshape2")
-library(scales)
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\summary.R")
+library("scales")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\summary.R")
 
 one_million <- read.csv("ws_one_million.csv")
 str(one_million)

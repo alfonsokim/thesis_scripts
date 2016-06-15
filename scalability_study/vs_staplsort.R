@@ -1,12 +1,12 @@
 rm(list=ls())
 
-setwd("C:\\Users\\Alfonso\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\VStaplSort")
+setwd("C:\\Users\\EXADKQ\\Dropbox\\MCC\\Tesis\\Resultados\\Escalabilidad\\VStaplSort")
 
 library("ggplot2")
 library("reshape2")
 library("scales")
 library("plyr")
-source("c:\\Users\\Alfonso\\workspace\\thesis_scripts\\scalability_study\\summary.R")
+source("C:\\Users\\EXADKQ\\Documents\\workspace\\thesis_scripts\\scalability_study\\summary.R")
 
 small_inputs <- read.csv("results_small_inputs.csv")
 small_inputs <- small_inputs[small_inputs$size >= 1000000, ]
@@ -111,7 +111,7 @@ big_inputs.r$label <- factor(big_inputs.r$size, levels=sort(unique(big_inputs.r$
 
 ggplot(big_inputs.r) + 
   geom_point(aes(x=locations, y=value, group=variable, color=variable),
-             size=3) +
+             size=2) +
   geom_line(aes(x=locations, y=value, group=variable, color=variable),
             size=1) + 
   facet_wrap(~ label, scales="free_y") + 
@@ -124,4 +124,4 @@ ggplot(big_inputs.r) +
   xlab("Cores (Locations)") +
   ylab("Time (seconds)")
 
-
+ggsave(filename="cs_vs_ss_large_2.png", path="Graficas") # ,width=12.5, height=7.5, units='in', limitsize = FALSE
